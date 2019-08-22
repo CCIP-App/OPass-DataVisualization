@@ -22,7 +22,7 @@ attendeeChecked = 0
 
 def checkUsed(data, scenario):
     if scenario not in data["scenario"]:
-        return(True)
+        return(False)
     else:
         if "used" in data["scenario"][scenario]:
             return(True)
@@ -38,7 +38,7 @@ with open(attendeePath) as f:
         for field in toCheckField:
             if checkUsed(json.loads(line), field):
                 checked = True
-        if checkUsed:
+        if checked:
             attendeeChecked += 1
         line = f.readline()
 
