@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.css" integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
+    <title>Line Chart</title>
+</head>
+
+<body>
+    <div onclick="openFileDialog()" id="tips">Click here to select file. sortByTime.json</div>
+    <canvas id="chart"></canvas>
+    <input type="file" style="display:none" id="file" />
+    <script>
+        document.getElementById("file").addEventListener("change", handleFileSelect, false);
+
+        function openFileDialog() {
+            document.getElementById("file").click();
+        }
+
+        function getEmptyData(count) {
+            var tmp = [];
+            for (var i = 1; i <= count; i++) {
+                tmp.push(0);
+            }
+            return tmp;
+        }
+
+        function getRandomColors(count) {
+            const colors = [
+                "#fe4a49",
+                "#2ab7ca",
+                "#fed766",
+                "#4a4e4d",
+                "#0e9aa7",
+                "#3da4ab",
+                "#f6cd61",
+                "#fe8a71",
+                "#ee4035",
+                "#f37736",
+                "#fdf498",
+                "#7bc043",
+                "#0392cf",
+                "#96ceb4",
+                "#ffeead",
+                "#ff6f69",
+                "#ffcc5c",
+                "#88d8b0",
+                "#d11141",
+                "#00b159",
+                "#00aedb",
+                "#f37735",
+                "#ffc425",
+                "#8dbdff",
+                "#64a1f4",
+                "#4a91f2",
+                "#3b7dd8"
+            ];
+            var tmp = [];
+            for (var i = 1; i <= count; i++) {
+                tmp.push(colors[Math.floor(Math.random() * colors.length)]);
+            }
+            return tmp;
+        }
+
+        function handleFileSelect(evt) {
+            var files = evt.target.files;
+            document.getElementById("tips").innerHTML = "";
+            f = files[0];
+            var reader = new FileReader();
+            reader.onload = (function(theFile) {
+                return function(e) {
+                    JsonObj = JSON.parse(e.target.result);
+                    setTimeout(() => {
+                        createChart(JsonObj);
+                    }, 3000)
+                };
+            })(f);
+            reader.readAsText(f);
+        }
+
+        function createChart(data) {
+            const ctx = "chart";
+            console.log(data);
+            console.log(data.fields);
+            var chart = new Chart(ctx, {
+                type: "horizontalBar",
+                data: {
+                    labels: data.fields,
+                    datasets: [{
+                        label: "# of Scanned",
+                        data: getEmptyData(data.fields.length),
+                        backgroundColor: getRandomColors(data.fields.length),
+                        borderColor: null,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: ''
+                    }
+                }
+            });
+
+            function updateChart(data) {
+                const nowData = data.data.shift();
+                for (var key in nowData.data) {
+                    chart.data.datasets[0].data[data.fields.indexOf(key)] +=
+                        nowData.data[key];
+                }
+                chart.options.title.text = "Time : " + new Date(nowData.time * 1000).toLocaleString("zh-TW")
+                chart.update();
+                console.log(chart.data.datasets[0].data);
+                setTimeout(() => updateChart(data), 19);
+            }
+            updateChart(data);
+        }
+    </script>
+</body>
+
+</html>
