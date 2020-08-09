@@ -23,7 +23,7 @@ with open(path) as f:
         data = json.loads(line)["deliverer"]
         for sponsor in data:
             date = datetime.datetime.fromtimestamp(
-                int(sponsor["timestamp"])).astimezone(timezone("Asia/Taipei")).strftime('%Y-%m-%d')
+                int(float(sponsor["timestamp"]["$numberDouble"]))).astimezone(timezone("Asia/Taipei")).strftime('%Y-%m-%d')
             name = str(sponsor["deliverer"])
             if date not in dayData:
                 dayData[date] = {}

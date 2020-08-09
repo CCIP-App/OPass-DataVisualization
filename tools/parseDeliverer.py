@@ -20,7 +20,7 @@ with open(path) as f:
     while line:
         data = json.loads(line)["deliverer"]
         for sponsor in data:
-            time = int(sponsor["timestamp"])
+            time = int(float(sponsor["timestamp"]["$numberDouble"]))
             name = str(sponsor["deliverer"])
             if time not in sortByTimestamp:
                 sortByTimestamp[time] = {}
